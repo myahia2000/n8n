@@ -1,20 +1,22 @@
-# ✅ Use supported Node.js version (e.g., 20)
+# Use supported Node.js version 20 (LTS)
 FROM node:20
 
-# Create app directory
+# Set working directory inside the container
 WORKDIR /usr/src/app
 
-# Install pnpm
+# Enable corepack and prepare pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Clone n8n and install dependencies
-RUN git clone https://github.com/n8n-io/n8n.git . \
- && pnpm install
+# Clone n8n repo (shallow clone for faster builds)
+RUN git clone --depth 1 https://github.com/n8n-io/n8n.git .
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
 # Build the app
 RUN pnpm build
 
-# Expose port
+# Expose n8n default port
 EXPOSE 5678
 
 # Start n8n
